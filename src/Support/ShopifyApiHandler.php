@@ -5,16 +5,9 @@ namespace BoldApps\ShopifyToolkit\Support;
 use BoldApps\ShopifyToolkit\Contracts\RequestHookInterface;
 use BoldApps\ShopifyToolkit\Contracts\ApiSleeper;
 
-/**
- * Class ShopifyApiHandler
- * @package BoldApps\Common\Support
- */
 class ShopifyApiHandler implements RequestHookInterface, ApiSleeper
 {
-
-    /**
-     * @var \GuzzleHttp\Psr7\Response|null $response
-     */
+    /** @var \GuzzleHttp\Psr7\Response|null */
     private $response;
 
     /**
@@ -37,55 +30,38 @@ class ShopifyApiHandler implements RequestHookInterface, ApiSleeper
      */
     public function sleep($response)
     {
-        $this->response = $response;
-        $percent = $this->getCallLimitPercent();
+//        $this->response = $response;
+//        $percent = $this->getCallLimitPercent();
+//
+//        if ($percent > 98) {
+//            logger()->debug('98');
+//            sleep(15);
+//        } elseif ($percent > 96) {
+//            logger()->debug('96');
+//            sleep(13);
+//        } elseif ($percent > 94) {
+//            logger()->debug('94');
+//            sleep(10);
+//        } elseif ($percent > 92) {
+//            logger()->debug('92');
+//            sleep(8);
+//        } elseif ($percent > 90) {
+//            logger()->debug('90');
+//            sleep(5);
+//        } elseif ($percent > 75) {
+//            logger()->debug('75');
+//            sleep(3);
+//        } elseif ($percent > 70) {
+//            logger()->debug('70');
+//            logger()->debug('SWITCHING CLIENT');
+//            logger()->debug(app());
+//            logger()->debug('after');
+//            //SWITCH CLIENT
+////            app()->bind(ShopifyClientInterface::class, GraphQLClient::class);
+//        }
 
-        if($percent > 98) {
-            sleep(15);
-        } elseif($percent > 96) {
-            sleep(13);
-        } elseif($percent > 94) {
-            sleep(10);
-        } elseif($percent > 92) {
-            sleep(8);
-        } elseif($percent > 90) {
-            sleep(5);
-        } elseif($percent > 75) {
-            sleep(3);
-        }
-
+        logger()->error('sleepa');
     }
 
-    /**
-     * @return int
-     */
-    private function getCallLimitPercent() {
-
-        $callLimitRatio = $this->getCallLimitRatio();
-        $callsMade = $callLimitRatio[0];
-        $callLimit = $callLimitRatio[1];
-
-        if($callLimit == 0) {
-            return 100;
-        }
-
-        return $callsMade / $callLimit * 100;
-    }
-
-    /**
-     * @return array
-     */
-    private function getCallLimitRatio() {
-        if($this->response !== null) {
-
-            $callLimitHeader = $this->response->getHeader('http_x_shopify_shop_api_call_limit');
-
-            if(isset($callLimitHeader[0])) {
-                return explode('/', $callLimitHeader[0]);
-            }
-        }
-
-        return array(1,100);
-    }
 
 }

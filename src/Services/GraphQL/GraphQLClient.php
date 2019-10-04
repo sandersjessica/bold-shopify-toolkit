@@ -10,13 +10,14 @@ use BoldApps\ShopifyToolkit\Exceptions\NotFoundException;
 use BoldApps\ShopifyToolkit\Exceptions\TooManyRequestsException;
 use BoldApps\ShopifyToolkit\Exceptions\UnauthorizedException;
 use BoldApps\ShopifyToolkit\Exceptions\UnprocessableEntityException;
+use BoldApps\ShopifyToolkit\Services\ShopifyClientInterface;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Cookie\SetCookie;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Uri;
 
-class GraphQLClient
+class GraphQLClient implements ShopifyClientInterface
 {
     /** @var ShopBaseInfo */
     protected $shopBaseInfo;
@@ -63,7 +64,7 @@ class GraphQLClient
      *
      * @return array
      */
-    public function post($params, $body, array $cookies = [], $password = null, $frontendApi = false, $extraHeaders = [])
+    public function post($path, $params, $body, array $cookies = [], $password = null, $frontendApi = false, $extraHeaders = [])
     {
         $headers = ['X-Shopify-Access-Token' => $this->shopAccessInfo->getToken(), 'Content-Type' => 'application/json', 'charset' => 'utf-8'];
         $headers = array_merge($headers, $extraHeaders);
@@ -100,7 +101,7 @@ class GraphQLClient
      * @throws UnprocessableEntityException
      * @throws TooManyRequestsException
      */
-    private function sendRequestToShopify(Request $request, array $cookies = [], $password = null)
+    public function sendRequestToShopify(Request $request, array $cookies = [], $password = null)
     {
         $result = null;
 
@@ -130,7 +131,7 @@ class GraphQLClient
 
             $response = $this->client->send($request, $options);
 
-            $result = \GuzzleHttp\json_decode((string) $response->getBody(), true);
+//            $result = \GuzzleHttp\json_decode((string) $response->getBody(), true);
         } catch (RequestException $e) {
             $response = $e->getResponse();
 
@@ -156,9 +157,26 @@ class GraphQLClient
             $response = null;
         } finally {
             // ToDo:: We need a separate throttling class for the GraphQL client based on points
-            $this->requestHookInterface->afterRequest($response);
+//            $this->requestHookInterface->afterRequest($response);
         }
 
-        return $result;
+        return $response;
+    }
+    public function put($path, $params, $body)
+    {
+        // TODO: Implement put() method.
+    }public function delete($path, $params = [])
+{
+    // TODO: Implement delete() method.
+}
+
+    public function get($path, $params = [], array $cookies = [], $password = null, $frontendApi = false)
+    {
+        $this->post($path, $params, $cookies, $password, $frontendApi);
+    }
+
+    public function getThreshold($response)
+    {
+        // TODO: Implement getThreshold() method.
     }
 }

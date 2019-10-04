@@ -26,15 +26,31 @@ class ProductVariantsGraphQL
 
     public function query($filter = [], $node = [], $first = 10)
     {
-        $filterString = !empty($filter) ? 'query: "' . implode(' ', $filter) . '"' : '';
+        $filterString = !empty($filter) ? 'query: "product_id:1528167104547"' : '';
         $nodeString = implode(' ',$node);
 
         $query = <<<GRAPHQL
             query {
-                productVariants( $filterString, first: $first) {
+                productVariants(query: "product_id:1528167104547", first: $first) {
                     edges {
                         cursor,
-                 node { $nodeString }
+                 node { id,
+            title,
+            price,
+            sku,
+            position,
+            inventoryPolicy,
+            compareAtPrice,
+            inventoryManagement,
+            createdAt,
+            updatedAt,
+            taxable,
+            barcode,
+            weight,
+            weightUnit,
+            inventoryQuantity,
+            requiresShipping,
+            product { id} }
                },
                pageInfo {
                         hasNextPage,
@@ -45,6 +61,5 @@ class ProductVariantsGraphQL
 GRAPHQL;
 
         $result = $this->client->post([], $query);
-        dd($result);
     }
 }
